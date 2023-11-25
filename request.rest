@@ -1,0 +1,47 @@
+POST http://localhost:3000/api/carros
+Content-Type: application/json
+
+{
+    "placa": "SRP0H65",
+    "modelo": "TS10",
+    "cliente": "LOCALIZA",
+    "dataentrada": "2023-11-20",
+    "situacao": "DESCONHECIDO",
+    "orgao": "DESCONHECIDO",
+    "obs": "CARRO NOVO",
+    "km": "33550"
+}
+###
+GET http://localhost:3000/api/carros
+
+###
+GET http://localhost:3000/api/carros/filtrado
+Content-Type: application/json
+
+{
+    "cliente":"LOCALIZA",
+ 
+}
+
+###
+DELETE http://localhost:3000/api/carros
+Content-Type: application/json
+
+{
+    "id":"65564a04b6f49453f7d4dce8"
+}
+
+###
+PUT http://localhost:3000/api/carros/65564a23b6f49453f7d4dcec
+Content-Type: application/json
+
+{
+    "placa": "AAA0A",
+    "modelo": "CRETA",
+    "cliente": "LOCALIZA",
+    "dataentrada": "2023-11-16",
+    "situacao": "DESCONHECIDO",
+    "orgao": "DESCONHECIDO",
+    "obs": "CARRO NOVO",
+    "localizacao": "RADAR"
+}
