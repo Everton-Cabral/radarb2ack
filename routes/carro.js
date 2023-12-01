@@ -1,6 +1,9 @@
 const router = require("express").Router()
-
 const carroController = require("../controllers/carroController");
+const upload = require('../middlewares/uploadMiddleware'); 
+
+
+
 
 router
     .route("/carros")
@@ -25,5 +28,10 @@ router
 router
     .route("/carros/:id")
     .put((req, res) => carroController.update(req, res));
+
+router
+    .route("/carros/upload/:id")
+    .post(upload.single('file'), carroController.uploadFile)
+    
 
 module.exports = router;

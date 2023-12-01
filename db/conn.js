@@ -1,4 +1,11 @@
 const mongoose = require("mongoose");
+const grid = require("gridfs-stream");
+const fs = require("fs");
+const multer = require('multer');
+
+
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 async function main() {
     try {
@@ -12,6 +19,15 @@ async function main() {
         });
 
         console.log("Conectado ao banco!");
+
+    // Crie uma stream do GridFS usando o Mongoose e o GridFS-Stream
+        const connection = mongoose.connection;
+        grid.mongo = mongoose.mongo;
+        const gfs = grid(connection.db);
+
+
+
+
     } catch (error) {
         console.log(`Erro: ${error}`);
     }

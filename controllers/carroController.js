@@ -1,4 +1,7 @@
 const { Carro: CarroModel} = require("../models/carro");
+const AWS = require('aws-sdk')
+const upload = require('../middlewares/uploadMiddleware'); 
+const path = require('path');
 
 const carroController = {
 
@@ -117,6 +120,36 @@ const carroController = {
         res.status(200).json({carro, msg:"Serviço atualizado com sucesso!"})
     },
 
+    uploadFile: async (req, res) => {
+        try {
+          const { id } = req.params;
+          const { file } = req;
+      
+          if (!file) {
+            return res.status(400).send('Nenhum arquivo enviado');
+          }
+      
+          // Obtenha o conteúdo do arquivo como Buffer
+          const fileContent = file.buffer;
+      
+          const params = {
+            Bucket: 'filesradar',
+            Key: `uploads/${id}/${file.originalname}`,
+            Body: fileContent,
+          };
+      
+          // Utiliza o SDK da AWS configurado globalmente
+          await req.app.get('s3').upload(params).promise();
+      
+          return res.status(200).json({ message: 'Upload bem-sucedido!' });
+        } catch (error) {
+          console.error('Erro durante o upload para o S3:', error);
+          console.log('Resposta do servidor:', await error.text());
+          return res.status(500).json({ message: 'Erro durante o upload para o S3', error: error.message });
+        }
+      }
+
+    
 };
 
 module.exports = carroController;
