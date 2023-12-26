@@ -11,7 +11,16 @@ router
 
 router
     .route("/carros")
+    .get((req, res) => carroController.getCarOficina(req, res));
+
+
+router
+    .route("/carros/historico")
     .get((req, res) => carroController.getAll(req, res));
+
+router
+    .route("/carros/orcamento")
+    .get((req, res) => carroController.getOrcamento(req, res));
 
 router
     .route("/carros/filtrado")
@@ -28,6 +37,14 @@ router
 router
     .route("/carros/:id")
     .put((req, res) => carroController.update(req, res));
+
+router
+    .route("/carros/exit/:id")
+    .put((req, res) => carroController.exitCar(req, res));
+
+router
+    .route("/carros/checkorcamento/:id")
+    .put((req, res) => carroController.checkOrcamento(req, res));
 
 router
     .route("/carros/upload/:id")

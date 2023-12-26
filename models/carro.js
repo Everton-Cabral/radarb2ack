@@ -7,10 +7,22 @@ const carroSchema = new Schema({
     modelo: String,
     cliente: String,
     dataentrada: Date,
+    datasaida: Date,
     situacao: String,
     orgao: String,
     obs: String,
+    orcamento: String,
     km: String,
+    naoficina: {
+        type: Boolean,
+        default: true
+    },
+    fezorcamento: {
+        type: Boolean,
+        default: false
+    },
+    imagens: [String],
+    videos: [String],
 },
     {timestamps: true}
 );

@@ -35,7 +35,7 @@ const carroController = {
     },
     getAll: async (req, res) => {
         try {
-            const carros = await CarroModel.find();
+            const carros = await CarroModel.find().sort({ dataentrada: -1 });
 
             res.json(carros); 
 
@@ -43,6 +43,29 @@ const carroController = {
             console.log(error)
         }
     },
+    getCarOficina: async(req, res) =>{
+        try {
+           
+
+            const carrosNaOficina = await CarroModel.find({ naoficina: true });
+
+            res.json(carrosNaOficina );
+
+        } catch(error){
+            console.log(error)
+        }
+    }, 
+    getOrcamento: async(req, res) =>{
+        try {
+           
+            const orcamento = await CarroModel.find({ fezorcamento: false }).sort({ dataentrada: 1 });
+
+            res.json(orcamento );
+
+        } catch(error){
+            console.log(error)
+        }
+    }, 
     getByFilter: async(req, res) =>{
         try {
             const { placa, modelo, cliente, dataentrada, situacao, orgao, km} = req.query
@@ -96,6 +119,31 @@ const carroController = {
             
         }
     },
+    checkOrcamento: async (req, res) => {
+        const id = req.params.id;
+
+        const checkOrcamento = await CarroModel.findByIdAndUpdate(id, {fezorcamento: true})
+
+        if (!checkOrcamento) {
+            res.status(404).json({msg: "Serviço não encontrado."});
+            return;
+        }
+
+        res.status(200).json({msg:"Serviço atualizado com sucesso!"})
+    },
+    exitCar: async (req, res) => {
+        const id = req.params.id;
+        const dataAtual = new Date();
+
+        const exitCarro = await CarroModel.findByIdAndUpdate(id, {naoficina: false, datasaida: dataAtual})
+
+        if (!exitCarro) {
+            res.status(404).json({msg: "Serviço não encontrado."});
+            return;
+        }
+
+        res.status(200).json({msg:"Serviço atualizado com sucesso!"})
+    },
     update: async (req, res) => {
         const id = req.params.id;
 
@@ -108,6 +156,9 @@ const carroController = {
             orgao: req.body.orgao,
             obs: req.body.obs,
             km: req.body.km,
+            orcamento: req.body.orcamento,
+            imagens: req.body.imagens,
+            videos: req.body.videos,
         };
 
         const updateCarro = await CarroModel.findByIdAndUpdate(id, carro)
@@ -125,9 +176,12 @@ const carroController = {
           const { id } = req.params;
           const { file } = req;
       
-          if (!file) {
+        if (!file) {
             return res.status(400).send('Nenhum arquivo enviado');
+          } else{
+            console.log('arquivo enviado')
           }
+          console.log(id)
       
           // Obtenha o conteúdo do arquivo como Buffer
           const fileContent = file.buffer;
@@ -136,15 +190,27 @@ const carroController = {
             Bucket: 'filesradar',
             Key: `uploads/${id}/${file.originalname}`,
             Body: fileContent,
+            ContentType: file.mimetype,
+            ContentDisposition: 'inline',
           };
       
           // Utiliza o SDK da AWS configurado globalmente
-          await req.app.get('s3').upload(params).promise();
-      
-          return res.status(200).json({ message: 'Upload bem-sucedido!' });
+          const uploadResponse =  await req.app.get('s3').upload(params).promise();
+          //console.log('Resposta completa do upload:', uploadResponse.Location);
+
+          const tipoArquivo = file.mimetype.split('/')[0];
+        if(tipoArquivo === 'image'){
+            const carroAtualizado = await CarroModel.findByIdAndUpdate(id, { $push: { imagens: uploadResponse.Location } }, { new: true });
+           res.status(200).json({ message: 'Upload bem-sucedido!', imagens: carroAtualizado.imagens });
+        } else if(tipoArquivo === 'video'){
+            const carroAtualizado = await CarroModel.findByIdAndUpdate(id, { $push: { videos: uploadResponse.Location } }, { new: true });
+           res.status(200).json({ message: 'Upload bem-sucedido!', videos: carroAtualizado.videos});
+        }
+          
+          
+         
         } catch (error) {
           console.error('Erro durante o upload para o S3:', error);
-          console.log('Resposta do servidor:', await error.text());
           return res.status(500).json({ message: 'Erro durante o upload para o S3', error: error.message });
         }
       }
