@@ -3,7 +3,7 @@ const cors = require("cors")
 const app = express()
 const AWS = require('aws-sdk');
 
-app.use(cors())
+app.use(cors({ origin: '*' }))
 
 app.use(express.json())
 

@@ -19,14 +19,10 @@ const carroController = {
                 km: req.body.km,
             };
 
-            const placaExistente = await CarroModel.find({placa: carro.placa});
-                if(placaExistente.length === 0){
                     const response = await CarroModel.create(carro);
         
                     res.status(201).json({response, msg: "serviço criado com sucesso!"})
-                } else {
-                    res.json({msg:"placa cadastrada"})
-                }
+              
 
         } catch (error) {
 

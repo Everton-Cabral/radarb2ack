@@ -10,7 +10,7 @@ const upload = multer({ storage: storage });
 async function main() {
     try {
         // Substitua "radar" pelo nome do seu banco de dados local
-        const databaseName = "radar";
+        const databaseName = "radar2";
 
         // Substitua a string de conexão para apontar para o banco de dados local
         await mongoose.connect(`mongodb://127.0.0.1:27017/${databaseName}`, {
